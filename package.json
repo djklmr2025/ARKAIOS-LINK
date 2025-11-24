@@ -1,0 +1,25 @@
+{
+  "name": "arkaios-link",
+  "version": "1.0.0",
+  "description": "Servidor de continuidad para ELEMIA-SEED-v3.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:mcp": "node server-elemia.mjs",
+    "dev": "node --watch index.js",
+    "test:local": "node scripts/test-local.cjs",
+    "test:mcp": "node scripts/test-mcp.cjs",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.56.0",
+    "cors": "^2.8.5",
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
