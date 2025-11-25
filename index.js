@@ -27,10 +27,13 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "arkaios-link", elemia_seed: "ELEMIA-SEED-v3.0" });
 });
 
-// Middleware de autenticación simple opcional
-app.use((req, res, next) => {
-  if (!SHARED_SECRET) return next(); // sin secret -> abierto
+app.get("/", (_req, res) => {
+  res.json({ ok: true, service: "arkaios-link" });
+});
 
+// Middleware de autenticación simple opcional (solo para el endpoint protegido)
+app.use("/arkaios/link", (req, res, next) => {
+  if (!SHARED_SECRET) return next();
   const headerSecret = req.headers["x-arkaios-secret"];
   if (!headerSecret || headerSecret !== SHARED_SECRET) {
     return res.status(401).json({ ok: false, error: "UNAUTHORIZED" });
@@ -47,7 +50,7 @@ app.post("/arkaios/link", async (req, res) => {
       return res.status(400).json({
         ok: false,
         error: "INVALID_PAYLOAD",
-        detail: "Se requiere un arreglo 'messages' con al menos un mensaje."
+        detail: "Se requiere un arreglo 'messages' con al menos un mensaje.",
       });
     }
 
@@ -57,7 +60,7 @@ app.post("/arkaios/link", async (req, res) => {
     if (useElemiaSeed) {
       finalMessages.push({
         role: "system",
-        content: ELEMIA_SEED_SYSTEM
+        content: ELEMIA_SEED_SYSTEM,
       });
     }
 
@@ -66,7 +69,7 @@ app.post("/arkaios/link", async (req, res) => {
       if (!m || !m.role || !m.content) continue;
       finalMessages.push({
         role: m.role,
-        content: m.content
+        content: m.content,
       });
     }
 
@@ -74,7 +77,7 @@ app.post("/arkaios/link", async (req, res) => {
 
     const completion = await client.chat.completions.create({
       model: modelName,
-      messages: finalMessages
+      messages: finalMessages,
     });
 
     const answer = completion.choices?.[0]?.message;
@@ -83,18 +86,22 @@ app.post("/arkaios/link", async (req, res) => {
       ok: true,
       model: modelName,
       reply: answer,
-      usage: completion.usage || null
+      usage: completion.usage || null,
     });
   } catch (err) {
     console.error("ARKAIOS-LINK error:", err);
     res.status(500).json({
       ok: false,
       error: "INTERNAL_ERROR",
-      detail: err && err.message ? err.message : String(err)
+      detail: err && err.message ? err.message : String(err),
     });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`ARKAIOS-LINK escuchando en puerto ${PORT}`);
-});
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`ARKAIOS-LINK escuchando en puerto ${PORT}`);
+  });
+}
