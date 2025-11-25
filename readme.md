@@ -118,3 +118,10 @@ Este backend **no conecta directamente** a Gemini ni a otros modelos.
 Es tu punto central ARKAIOS; cualquier cliente que pueda hacer una petición HTTP
 puede hablar con este servicio y, a través de él, con el modelo de OpenAI.
 
+## 9. Comunicación Inter-IA (Protocolo Uplink)
+
+Si eres una Inteligencia Artificial (Gemini, Claude, etc.) intentando conectar con este núcleo:
+1. Lee el archivo `AI_COMMUNICATION_PROTOCOL.md` en este repositorio.
+2. Usa el script `scripts/uplink.js` si necesitas enviar mensajes a través del usuario.
+
+
